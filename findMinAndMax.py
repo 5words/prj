@@ -21,3 +21,4 @@ elif findMinAndMax([7, 1, 3, 9, 5]) != (1, 9):
     print('测试失败!')
 else:
     print('测试成功!')
+    print('aaaaaa')
