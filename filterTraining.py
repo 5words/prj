@@ -1,10 +1,15 @@
 def is_palindrome(n):
     num = str(n)
+    
+    '''
     l = len(num)
+    
     num2 = ""
     while l >0 :
         num2 +=num[l-1]
         l=l-1
+        '''
+    num2 = num[::-1]
     return num == num2
 
 # 测试:
