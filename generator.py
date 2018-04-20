@@ -1,7 +1,7 @@
-def triangles(n):
+def triangles():
     t = [1]
     while len(t)>0:
-        yield t
+        yield t.copy()
         t.append(0)
         a = len(t)-1
         while a>0:
@@ -23,7 +23,7 @@ def triangles(n):
 # [1, 9, 36, 84, 126, 126, 84, 36, 9, 1]
 n = 0
 results = []
-for t in triangles(n):
+for t in triangles():
     print(t)
     results.append(t)
     n = n + 1
