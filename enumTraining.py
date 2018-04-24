@@ -17,3 +17,5 @@ if bart.gender == Gender.Male:
     print('测试通过!')
 else:
     print('测试失败!')
+
+    
