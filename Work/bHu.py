@@ -14,8 +14,8 @@ form_data = {
     "timestamp":"",
     "source":"com.zhihu.web",
     "signature":"69db867d5b477d8c9e25cdbf27a268e4f44f593e",
-    "username":"+8615902110521",
-    "password":"365871221",
+    "username":"",
+    "password":"",
     "captcha":"",
     "lang":"cn",
     "ref_source":"homepage"
