@@ -1,6 +1,7 @@
 import requests
 from http import cookiejar
 import time
+import re
 
 headers = {
     "x-xsrftoken":"4cb85f99-ae62-4c29-9b17-c2bda70e8085",
@@ -22,19 +23,20 @@ form_data = {
     "ref_source":"homepage"
 }
 
-def bHu(object):
+class bHu(object):
 
     def __init__(self):
         self.home_url = Home_url
         self.base_login = Base_login
+        self.session = requests.session()
         self.session.headers = headers.copy()
         self.form_data = form_data.copy()
-        self.session = requests.session()
+        
         self.session = cookiejar.LWPCookieJar(filename="./cookie.txt")
 
     def Login(self,username=None,password=None,load_cookies=True):
-        username = input("请输入手机号")
-        password = input("请输入密码")
+        username = input("请输入手机号:")
+        password = input("请输入密码:")
         if "+86" not in username:
             username = "+86" + username
 
@@ -42,10 +44,28 @@ def bHu(object):
         
         self.form_data.update({"username":username,"password":password,"timestamp":timestamp})
 
-        resp = self.session.post(self.base_login,data = self.form_data,headers=headers)
-        
+        resp = requests.post(self.base_login,data = self.form_data,headers=headers)
+        if 'error' in resp.text:
+            print(re.findall(r'"message":"(.+?)"', resp.text)[0])
+        elif self.check_login():
+            return True
+        print('登录失败')
+        return False
 
 
+    def check_login(self):
+        resp = self.session.get(self.home_url, allow_redirects=False)
+        if resp.status_code == 302:
+            self.session.cookies.save()
+            print('登录成功')
+            return True
+        return False
+
+
+
+
+a = bHu()
+a.Login(username=None,password=None,load_cookies = True)
 
         
         
