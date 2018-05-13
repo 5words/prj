@@ -35,10 +35,11 @@ class bHu(object):
         self.home_url = Home_url
         self.base_login = Base_login
         self.session = requests.session()
+        self.session = cookiejar.LWPCookieJar(filename="./cookie.txt")
         self.session.headers = HEADERS.copy()
         self.form_data = form_data.copy()
         
-        self.session = cookiejar.LWPCookieJar(filename="./cookie.txt")
+        
 
     def Login(self,username=None,password=None,load_cookies=True):
         headers = self.session.headers.copy()
