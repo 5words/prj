@@ -7,10 +7,15 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from http import cookiejar
 import json
+import hmac
+import hashlib
 
 
 HEADERS = {
-    "x-xsrftoken":"4cb85f99-ae62-4c29-9b17-c2bda70e8085",
+    'Connection': 'keep-alive',
+    'Host': 'www.zhihu.com',
+    'Referer': 'https://www.zhihu.com/',
+    "x-xsrftoken":"29fa017b-2187-4c60-bbcd-ee7ae57e03a8",
     "authorization":"oauth c3cef7c66a1843f8b3a9e6a1e3160e20",
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36'
 }
@@ -35,7 +40,7 @@ class bHu(object):
         self.home_url = Home_url
         self.base_login = Base_login
         self.session = requests.session()
-        self.session = cookiejar.LWPCookieJar(filename="./cookie.txt")
+        self.session.cookies = cookiejar.LWPCookieJar(filename="./cookie.txt")
         self.session.headers = HEADERS.copy()
         self.form_data = form_data.copy()
         
@@ -52,7 +57,8 @@ class bHu(object):
         
         self.form_data.update({"username":username,"password":password,"timestamp":timestamp})
         self.form_data.update({
-            "captcha":self.get_captcha
+            "captcha":self.get_captcha(headers),
+            "signature":self.get_signature(timestamp)
         })
 
 
@@ -72,7 +78,8 @@ class bHu(object):
             print('登录成功')
             return True
         return False
-
+        
+  
 
     def get_captcha(self,headers):
         lang = headers.get("lang","en")
@@ -101,6 +108,14 @@ class bHu(object):
             self.session.post(api, data={'input_text': capt}, headers=headers)
             return capt
         return ''
+
+    def get_signature(self,timestamp):
+        ha = hmac.new(b'd1b964811afb40118a12068ff74a12f4', digestmod=hashlib.sha1)
+        grant_type = self.form_data['grant_type']
+        client_id = self.form_data['client_id']
+        source = self.form_data['source']
+        ha.update(bytes((grant_type + client_id + source + timestamp), 'utf-8'))
+        return ha.hexdigest()
 
 
 
