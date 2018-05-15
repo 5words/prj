@@ -47,6 +47,8 @@ class bHu(object):
         
 
     def Login(self,username=None,password=None,load_cookies=True):
+
+
         headers = self.session.headers.copy()
         username = input("请输入手机号:")
         password = input("请输入密码:")
@@ -79,7 +81,7 @@ class bHu(object):
             return True
         return False
         
-  
+ 
 
     def get_captcha(self,headers):
         lang = headers.get("lang","en")
