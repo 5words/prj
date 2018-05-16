@@ -1,5 +1,4 @@
 import requests
-
 import time
 import re
 import base64
@@ -15,7 +14,6 @@ HEADERS = {
     'Connection': 'keep-alive',
     'Host': 'www.zhihu.com',
     'Referer': 'https://www.zhihu.com/',
-    "x-xsrftoken":"29fa017b-2187-4c60-bbcd-ee7ae57e03a8",
     "authorization":"oauth c3cef7c66a1843f8b3a9e6a1e3160e20",
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36'
 }
@@ -26,7 +24,6 @@ form_data = {
     "grant_type":"password",
     "timestamp":"",
     "source":"com.zhihu.web",
-    "signature":"69db867d5b477d8c9e25cdbf27a268e4f44f593e",
     "username":"",
     "password":"",
     "captcha":"",
@@ -47,9 +44,15 @@ class bHu(object):
         
 
     def Login(self,username=None,password=None,load_cookies=True):
+        if load_cookies and self.load_cookies():
+            if self.check_login():
+                return True
 
 
         headers = self.session.headers.copy()
+        self.session.headers.update({
+            "X-Xsrftoken":self.get_token()
+        })
         username = input("请输入手机号:")
         password = input("请输入密码:")
         if "+86" not in username:
@@ -64,7 +67,7 @@ class bHu(object):
         })
 
 
-        resp = requests.post(self.base_login,data = self.form_data,headers=headers)
+        resp = requests.post(self.base_login,data = self.form_data,headers=self.session.headers)
         if 'error' in resp.text:
             print(re.findall(r'"message":"(.+?)"', resp.text)[0])
         elif self.check_login():
@@ -80,7 +83,19 @@ class bHu(object):
             print('登录成功')
             return True
         return False
+
+    def get_token(self):
         
+        resp = self.session.get(self.home_url)
+        token = re.findall(r'_xsrf=([\w|-]+)', resp.headers.get('Set-Cookie'))[0]
+        return token
+        
+    def load_cookies(self):
+        try:
+            self.session.cookies.load(ignore_discard=True)
+            return True
+        except FileNotFoundError:
+            return False
  
 
     def get_captcha(self,headers):
