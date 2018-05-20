@@ -67,7 +67,7 @@ class bHu(object):
         })
 
 
-        resp = requests.post(self.base_login,data = self.form_data,headers=self.session.headers)
+        resp = self.session.post(self.base_login,data = self.form_data,headers=self.session.headers)
         if 'error' in resp.text:
             print(re.findall(r'"message":"(.+?)"', resp.text)[0])
         elif self.check_login():
@@ -122,7 +122,7 @@ class bHu(object):
                 img.show()
                 capt = input('请输入图片里的验证码：')
             # 这里必须先把参数 POST 验证码接口
-            self.session.post(api, data={'input_text': capt}, headers=headers)
+            self.session.post(api, data={'input_text': capt}, headers=self.session.headers)
             return capt
         return ''
 
