@@ -80,4 +80,10 @@
   - requests
   - chardet
   - psutil
-  
+## 第四周
+- 知乎爬虫练习
+  - requests
+  - session
+- 图形界面
+ 
+    
