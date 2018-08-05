@@ -1,0 +1,10 @@
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.csprojAssemblyReference.cache
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.Form1.resources
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.Properties.Resources.resources
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.csproj.GenerateResource.cache
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.csproj.CoreCompileInputs.cache
+E:\prj\Numplate\Numplate\bin\Debug\Numplate.exe.config
+E:\prj\Numplate\Numplate\bin\Debug\Numplate.exe
+E:\prj\Numplate\Numplate\bin\Debug\Numplate.pdb
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.exe
+E:\prj\Numplate\Numplate\obj\Debug\Numplate.pdb
