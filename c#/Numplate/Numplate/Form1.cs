@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Emgu.CV;
+using Emgu.Util;
+using Emgu.CV.Structure;
+using Emgu.CV.CvEnum;
 
 namespace Numplate
 {
@@ -37,7 +41,15 @@ namespace Numplate
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Emgu.CV.Image<Bgr, byte> image = new Emgu.CV.Image<Bgr, byte>(320, 240, new Bgr(0, 255, 255));
+            imageBox1.Image = image;
+        }
+
+        
     }
 }
