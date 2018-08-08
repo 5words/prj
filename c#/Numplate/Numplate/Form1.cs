@@ -22,7 +22,7 @@ namespace Numplate
         {
             InitializeComponent();
         }
-        //byte[] picturebytes;
+
         private void button1_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofdOpenLocalImage = new OpenFileDialog();
@@ -110,6 +110,18 @@ namespace Numplate
         }
 
         private void button6_Click(object sender, EventArgs e)
+        {
+            if (imageBox1.Image != null)
+            {
+                var image = (Image<Gray, Single>)imageBox1.Image;
+                Mat struct_element = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new Size(17, 3), new Point(-1, -1));
+                CvInvoke.MorphologyEx(image, image, MorphOp.Close, struct_element, new Point(-1, -1), 3, BorderType.Default, new MCvScalar(0, 0, 0));
+                imageBox1.Image = image;
+                //CvInvoke.Imshow("Erode Image", image);
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
         {
 
         }
