@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Emgu.CV;
-using Emgu.Util;
 using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
+using Emgu.CV.Util;
 
 namespace Numplate
 {
@@ -22,6 +22,10 @@ namespace Numplate
         {
             InitializeComponent();
         }
+        
+        Image<Bgr,Byte>img;
+        Image<Gray, Byte> img_gry;     
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -36,6 +40,7 @@ namespace Numplate
             {
                 Image<Bgr, byte> image = new Image<Bgr, byte>(ofdOpenLocalImage.FileName);
                 imageBox1.Image = image;
+                img = image;
             }
             else
             {
@@ -68,9 +73,9 @@ namespace Numplate
             if (imageBox1.Image != null)
             {
                 var image = (Image<Bgr, Byte>)imageBox1.Image;
-                Image<Gray, Byte> Gr_img = image.Convert<Gray, Byte>();
+                Image<Gray, Byte> Gr_img = image.Convert<Gray, byte>();
                 imageBox1.Image = Gr_img;
-
+                img_gry = Gr_img;
             }
             else
             {
@@ -83,7 +88,10 @@ namespace Numplate
             if (imageBox1.Image != null)
             {
                 var a = (Image<Gray, Byte>)imageBox1.Image;
+                //Mat grad_x, grad_y;
+                //Mat abd_grad_x, abs_grad_y;
                 imageBox1.Image = a.Sobel(1, 0, 3).AddWeighted(a.Sobel(0, 1, 3), 0.5, 0.5, 0);
+                //imageBox1.Image=image.Sobel(2,0,3);
 
             }
             else
@@ -122,6 +130,31 @@ namespace Numplate
         }
 
         private void button7_Click(object sender, EventArgs e)
+        {
+            var image = (Image<Gray, Single>)imageBox1.Image;
+            Image<Gray, Byte> image2 = image.Convert<Gray, Byte>();
+            VectorOfVectorOfPoint con = new VectorOfVectorOfPoint();
+            CvInvoke.FindContours(image2,con,null, RetrType.External, ChainApproxMethod.ChainApproxNone);
+            for(int i = 0; i < con.Size; i++)
+            {
+                CvInvoke.DrawContours(img, con, i, new MCvScalar(255, 0, 255, 255), 2);
+            }
+
+            imageBox1.Image = img;
+
+            //Image<Bgr, byte> a = img;
+            //Image<Gray, byte> b = new Image<Gray, byte>(a.Width, a.Height);
+            //Image<Gray, byte> c = new Image<Gray, byte>(a.Width, a.Height);
+            //Image<Bgr, byte> d = new Image<Bgr, byte>(a.Width, a.Height);
+            //CvInvoke.Canny(a, b, 100, 60);
+            //VectorOfVectorOfPoint con = new VectorOfVectorOfPoint();
+            //CvInvoke.FindContours(b, con, c, RetrType.External, ChainApproxMethod.ChainApproxNone);
+            //for (int i = 0; i < con.Size; i++)
+            //    CvInvoke.DrawContours(d, con, i, new MCvScalar(255, 0, 255, 255), 2);
+            //imageBox1.Image = d;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
         {
 
         }
