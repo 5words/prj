@@ -26,3 +26,17 @@ C:\Users\IBM_ADMIN\Desktop\prj\c#\Numplate\Numplate\obj\Debug\Numplate.csproj.Co
 C:\Users\IBM_ADMIN\Desktop\prj\c#\Numplate\Numplate\obj\Debug\Numplate.csproj.CopyComplete
 C:\Users\IBM_ADMIN\Desktop\prj\c#\Numplate\Numplate\obj\Debug\Numplate.exe
 C:\Users\IBM_ADMIN\Desktop\prj\c#\Numplate\Numplate\obj\Debug\Numplate.pdb
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.csprojAssemblyReference.cache
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.Form1.resources
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.Properties.Resources.resources
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.csproj.GenerateResource.cache
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.csproj.CoreCompileInputs.cache
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.exe
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.pdb
+E:\prj\c#\Numplate\Numplate\bin\Debug\Numplate.exe.config
+E:\prj\c#\Numplate\Numplate\bin\Debug\Numplate.exe
+E:\prj\c#\Numplate\Numplate\bin\Debug\Numplate.pdb
+E:\prj\c#\Numplate\Numplate\bin\Debug\Emgu.CV.UI.xml
+E:\prj\c#\Numplate\Numplate\bin\Debug\Emgu.CV.UI.GL.xml
+E:\prj\c#\Numplate\Numplate\bin\Debug\Emgu.CV.World.xml
+E:\prj\c#\Numplate\Numplate\obj\Debug\Numplate.csproj.CopyComplete

@@ -17,6 +17,10 @@ namespace Numplate
 {
     public partial class Form1 : Form
     {
+        static float m_error = 0.9f;
+        static float m_aspect = 3.75f;
+        static int m_verifyMin = 1;
+        static int m_verifyMax = 24;
         
         public Form1()
         {
@@ -24,7 +28,24 @@ namespace Numplate
         }
         
         Image<Bgr,Byte>img;
-        Image<Gray, Byte> img_gry;     
+        Image<Gray, Byte> img_gry;
+        
+        bool verifySize(RotatedRect mr)
+        {
+            float error = m_error;
+            float aspect = m_aspect;
+            int min = 34 * 8 * m_verifyMin;  // minimum area
+            int max = 34 * 8 * m_verifyMax;  // maximum area
+            float rmin = aspect - aspect * error;
+            float rmax = aspect + aspect * error;
+            float area = mr.Size.Height * mr.Size.Width;
+            float r = (float)mr.Size.Width / (float)mr.Size.Height;
+            if (r < 1) r = (float)mr.Size.Height / (float)mr.Size.Width;
+            if ((area < min || area > max) || (r < rmin || r > rmax))
+                return false;
+            else
+                return true;
+        }
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -134,11 +155,38 @@ namespace Numplate
             var image = (Image<Gray, Single>)imageBox1.Image;
             Image<Gray, Byte> image2 = image.Convert<Gray, Byte>();
             VectorOfVectorOfPoint con = new VectorOfVectorOfPoint();
-            CvInvoke.FindContours(image2,con,null, RetrType.External, ChainApproxMethod.ChainApproxNone);
-            for(int i = 0; i < con.Size; i++)
+            Image<Gray, byte> c = new Image<Gray, byte>(image.Width, image.Height);
+            CvInvoke.FindContours(image2,con, c, RetrType.External, ChainApproxMethod.ChainApproxNone);
+            Point[][] con1 = con.ToArrayOfArray();
+            PointF[][] con2 = Array.ConvertAll<Point[],PointF[]>(con1, new Converter<Point[], PointF[]>(PointToPointF));
+            for (int i = 0; i < con.Size; i++)
             {
                 CvInvoke.DrawContours(img, con, i, new MCvScalar(255, 0, 255, 255), 2);
+                RotatedRect rrec = CvInvoke.MinAreaRect(con2[i]);
+                PointF[] pointfs = rrec.GetVertices();
+                if (!verifySize(rrec))
+                {
+                    for(int j = 0; j < pointfs.Length; j++)
+                    {
+                        CvInvoke.Line(img, new Point((int)pointfs[j].X, (int)pointfs[j].Y), new Point((int)pointfs[(j + 1) % 4].X, (int)pointfs[(j + 1) % 4].Y), new MCvScalar(0, 255, 0, 255), 4);
+                    }      
+                }
             }
+            
+
+
+            PointF[] PointToPointF(Point[] pf)
+            {
+                PointF[] aaa = new PointF[pf.Length];
+                int num = 0;
+                foreach (var point in pf)
+                {
+                    aaa[num].X = (int)point.X;
+                    aaa[num++].Y = (int)point.Y;
+                }
+                return aaa;
+            }
+
 
             imageBox1.Image = img;
 
