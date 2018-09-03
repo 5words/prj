@@ -13,11 +13,13 @@ using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Util;
 
+
+
 namespace Numplate
 {
     public partial class Form1 : Form
     {
-        static float m_error = 0.9f;
+        static float m_error = 0.6f;
         static float m_aspect = 3.75f;
         static int m_verifyMin = 1;
         static int m_verifyMax = 24;
@@ -39,13 +41,143 @@ namespace Numplate
             float rmin = aspect - aspect * error;
             float rmax = aspect + aspect * error;
             float area = mr.Size.Height * mr.Size.Width;
-            float r = (float)mr.Size.Width / (float)mr.Size.Height;
-            if (r < 1) r = (float)mr.Size.Height / (float)mr.Size.Width;
+            float r = mr.Size.Width / mr.Size.Height;
+            if (r < 1)
+            {
+                r = mr.Size.Height / mr.Size.Width;
+            }
+
             if ((area < min || area > max) || (r < rmin || r > rmax))
                 return false;
             else
                 return true;
         }
+
+        Mat colorMatch(Mat img,Mat match ,Color r,bool adaptive_minsv)
+        {
+            float max_sv = 255;
+            float minref_sv = 64;
+            float minabs_sv = 95;
+            int min_blue = 100;
+            int max_blue = 140;
+            int min_yellow = 15;
+            int max_yellow = 40;
+            int min_white = 0;
+            int max_white = 30;
+            Mat img_hsv = img;
+            CvInvoke.CvtColor(img, img_hsv, ColorConversion.Bgr2Hsv,0);
+            VectorOfMat hsvSplit= null;
+            CvInvoke.Split(img_hsv,hsvSplit);
+            CvInvoke.EqualizeHist(hsvSplit[2], hsvSplit[2]);
+            CvInvoke.Merge(hsvSplit,img_hsv);
+            
+
+            int min_h = 0;
+            int max_h = 0;
+            if(r == Color.Blue)
+            {
+                min_h = min_blue;
+                max_h = max_blue;
+            }
+            else if(r == Color.Yellow)
+            {
+                min_h = min_yellow;
+                max_h = max_yellow;
+            }
+            else if (r == Color.White)
+            {
+                min_h = min_white;
+                max_h = max_white;
+            }
+
+            float diff_h = (float)(max_h - min_h) / 2;
+            float avg_h = min_h + diff_h;
+
+            int channels = img_hsv.NumberOfChannels;
+            int nRows = img_hsv.Rows;
+
+            int nCols = img_hsv.Cols * channels;
+            if (img_hsv.IsContinuous)
+            {
+                nCols *= nRows;
+                nRows = 1;
+            }
+            unsafe
+            {
+                byte* p;
+
+                int i, j;
+
+                float s_all = 0;
+                float v_all = 0;
+                float count = 0;
+                for (i = 0; i < nRows; i++)
+                {
+                    p = (byte*)img_hsv.Ptr.ToPointer();
+                    for (j = 0; j < nCols; j += 3)
+                    {
+                        int H = p[j];
+                        int S = p[j + 1];
+                        int V = p[j + 2];
+
+                        s_all += S;
+                        v_all += V;
+                        count++;
+
+                        bool colorMatched = false;
+                        if (H > min_h && H < max_h)
+                        {
+                            float Hdiff = 0;
+                            if (H > avg_h)
+                                Hdiff = H - avg_h;
+                            else
+                                Hdiff = avg_h - H;
+
+                            float Hdiff_p = Hdiff / diff_h;
+
+                            float min_sv = 0;
+                            if (true == adaptive_minsv)
+                                min_sv = minref_sv - minref_sv / 2 * (1 - Hdiff_p);
+                            else
+                                min_sv = minabs_sv;
+
+                            if ((S > min_sv && min_sv < max_sv) && (V > min_sv && V < max_sv))
+                                colorMatched = true;
+
+                        }
+                        if(colorMatched == true)
+                        {
+                            p[j] = 0;
+                            p[j + 1] = 0;
+                            p[j + 2] = 255;
+
+                        }
+                        else
+                        {
+                            p[j] = 0;
+                            p[j + 1] = 0;
+                            p[j + 2] = 0;
+                        }
+                    }
+
+                }
+
+                Mat img_gry;
+                VectorOfMat hsvSplit_done=null;
+                CvInvoke.Split(img_hsv,hsvSplit_done);
+                img_gry = hsvSplit_done[2];
+                
+                match = img_gry;
+
+                return img_gry;
+                
+            }
+
+
+
+        }
+
+        
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -111,8 +243,7 @@ namespace Numplate
                 var a = (Image<Gray, Byte>)imageBox1.Image;
                 //Mat grad_x, grad_y;
                 //Mat abd_grad_x, abs_grad_y;
-                imageBox1.Image = a.Sobel(1, 0, 3).AddWeighted(a.Sobel(0, 1, 3), 0.5, 0.5, 0);
-                //imageBox1.Image=image.Sobel(2,0,3);
+                imageBox1.Image = a.Sobel(1, 0, 3).AddWeighted(a.Sobel(0, 1, 3), 1, 0, 0);
 
             }
             else
@@ -164,13 +295,15 @@ namespace Numplate
                 CvInvoke.DrawContours(img, con, i, new MCvScalar(255, 0, 255, 255), 2);
                 RotatedRect rrec = CvInvoke.MinAreaRect(con2[i]);
                 PointF[] pointfs = rrec.GetVertices();
-                if (!verifySize(rrec))
+                if (verifySize(rrec))
                 {
                     for(int j = 0; j < pointfs.Length; j++)
                     {
                         CvInvoke.Line(img, new Point((int)pointfs[j].X, (int)pointfs[j].Y), new Point((int)pointfs[(j + 1) % 4].X, (int)pointfs[(j + 1) % 4].Y), new MCvScalar(0, 255, 0, 255), 4);
                     }      
                 }
+                
+                
             }
             
 
@@ -204,7 +337,19 @@ namespace Numplate
 
         private void button8_Click(object sender, EventArgs e)
         {
+           
+           
+        }
 
+        private void btn_clickAll_Click(object sender, EventArgs e)
+        {
+            button2.PerformClick();
+            button3.PerformClick();
+            button4.PerformClick();
+            button5.PerformClick();
+            button6.PerformClick();
+            button7.PerformClick();
+            button8.PerformClick();
         }
     }
     
