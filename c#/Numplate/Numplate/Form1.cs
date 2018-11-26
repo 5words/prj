@@ -12,8 +12,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Util;
-
-
+using Emgu.CV.Features2D;
 
 namespace Numplate
 {
@@ -23,6 +22,8 @@ namespace Numplate
         static float m_aspect = 3.75f;
         static int m_verifyMin = 1;
         static int m_verifyMax = 24;
+        static float m_angle = 60;
+        
         
         public Form1()
         {
@@ -51,6 +52,23 @@ namespace Numplate
                 return false;
             else
                 return true;
+        }
+
+        Mat showResultMat(Mat img,Size rect_size,PointF center,int index)
+        {
+            Mat img_crop = null;
+            CvInvoke.GetRectSubPix(img, rect_size, center, img_crop);
+            string ss;
+            ss = "debug_crop_" + index + ".jpg";
+            CvInvoke.Imwrite(ss.ToString(), img_crop);
+            Mat resultResized= null;
+            resultResized.Create(Height, Width, DepthType.Default,1);
+            CvInvoke.Resize(img_crop,resultResized,resultResized.Size,0,0,Inter.Cubic);
+            string ss1;
+            ss1 = "debug_resize_" + index + ".jpg";
+            CvInvoke.Imwrite(ss1, resultResized);
+            return resultResized;
+            
         }
 
         Mat colorMatch(Mat img,Mat match ,Color r,bool adaptive_minsv)
@@ -177,7 +195,30 @@ namespace Numplate
 
         }
 
-        
+        //int colorSearch(Mat img, Color r, Mat outer, VectorOfRect outRects)
+        //{
+        //    Mat match_grey = null;
+        //    int color_morph_width = 10;
+        //    int color_morph_height = 2;
+
+        //    colorMatch(img, match_grey, r, false);
+        //    imageBox1.Image = match_grey;
+        //    Mat img_threshold = null;
+        //    CvInvoke.Threshold(match_grey, img_threshold, 0, 255, ThresholdType.Otsu & ThresholdType.Binary);
+        //    Mat element = CvInvoke.GetStructuringElement(ElementShape.Rectangle, Size(color_morph_width, color_morph_height));
+        //    CvInvoke.MorphologyEx(img_threshold, img_threshold, MorphOp.Close, Point(-1, -1));
+        //    outer = img_threshold;
+        //    VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+        //    Image<Gray, byte> c = new Image<Gray, byte>(img_threshold.Width, img_threshold.Height);
+        //    CvInvoke.FindContours(img_threshold, contours, c, RetrType.External, ChainApproxMethod.ChainApproxNone);
+        //    VectorOfVectorOfPoint itc = contours.begin();
+        //    while (itc != contours.end())
+        //    {
+        //        RotatedRect mr = minAr
+        //    }
+        //}
+
+
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -290,6 +331,7 @@ namespace Numplate
             CvInvoke.FindContours(image2,con, c, RetrType.External, ChainApproxMethod.ChainApproxNone);
             Point[][] con1 = con.ToArrayOfArray();
             PointF[][] con2 = Array.ConvertAll<Point[],PointF[]>(con1, new Converter<Point[], PointF[]>(PointToPointF));
+            int k = 1;
             for (int i = 0; i < con.Size; i++)
             {
                 CvInvoke.DrawContours(img, con, i, new MCvScalar(255, 0, 255, 255), 2);
@@ -300,11 +342,34 @@ namespace Numplate
                     for(int j = 0; j < pointfs.Length; j++)
                     {
                         CvInvoke.Line(img, new Point((int)pointfs[j].X, (int)pointfs[j].Y), new Point((int)pointfs[(j + 1) % 4].X, (int)pointfs[(j + 1) % 4].Y), new MCvScalar(0, 255, 0, 255), 4);
+                        float r = rrec.Size.Width / rrec.Size.Height;
+                        float angle = rrec.Angle;
+                        SizeF rect_size = rrec.Size;
+                        Size rectsize = rect_size.ToSize();
+                        if (r < 1)
+                        {
+                            angle = 90 + angle;
+                            float a = rect_size.Width;
+                            rect_size.Width = rect_size.Height;
+                            rect_size.Height = a;
+                        }
+                        if(angle-m_angle<0&&angle + m_angle > 0)
+                        {
+                            Mat img_rotated = new Mat();
+                            Mat rotmat = new Mat();
+                            Mat resultMat = new Mat();
+                            CvInvoke.GetRotationMatrix2D(rrec.Center, angle, 1,rotmat);
+                            CvInvoke.WarpAffine(img,img_rotated,rotmat,img.Size,Inter.Cubic);
+                            CvInvoke.Imshow("img_rotated", img_rotated);
+                            PointF recCenterF = rrec.Center;
+
+                            resultMat = showResultMat(img_rotated,rectsize,rrec.Center, k++);
+                        }
+
                     }      
-                }
-                
-                
+                }         
             }
+            
             
 
 
@@ -322,6 +387,7 @@ namespace Numplate
 
 
             imageBox1.Image = img;
+            
 
             //Image<Bgr, byte> a = img;
             //Image<Gray, byte> b = new Image<Gray, byte>(a.Width, a.Height);
@@ -350,6 +416,17 @@ namespace Numplate
             button6.PerformClick();
             button7.PerformClick();
             button8.PerformClick();
+        }
+
+        private void clMatchBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void angleJudge_Click(object sender, EventArgs e)
+        {
+            
+
         }
     }
     
