@@ -40,6 +40,8 @@
             this.button7 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.btn_clickAll = new System.Windows.Forms.Button();
+            this.clMatchBtn = new System.Windows.Forms.Button();
+            this.angleJudge = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -146,11 +148,33 @@
             this.btn_clickAll.UseVisualStyleBackColor = true;
             this.btn_clickAll.Click += new System.EventHandler(this.btn_clickAll_Click);
             // 
+            // clMatchBtn
+            // 
+            this.clMatchBtn.Location = new System.Drawing.Point(713, 364);
+            this.clMatchBtn.Name = "clMatchBtn";
+            this.clMatchBtn.Size = new System.Drawing.Size(75, 23);
+            this.clMatchBtn.TabIndex = 10;
+            this.clMatchBtn.Text = "色彩检测";
+            this.clMatchBtn.UseVisualStyleBackColor = true;
+            this.clMatchBtn.Click += new System.EventHandler(this.clMatchBtn_Click);
+            // 
+            // angleJudge
+            // 
+            this.angleJudge.Location = new System.Drawing.Point(713, 249);
+            this.angleJudge.Name = "angleJudge";
+            this.angleJudge.Size = new System.Drawing.Size(75, 23);
+            this.angleJudge.TabIndex = 11;
+            this.angleJudge.Text = "角度判断";
+            this.angleJudge.UseVisualStyleBackColor = true;
+            this.angleJudge.Click += new System.EventHandler(this.angleJudge_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.angleJudge);
+            this.Controls.Add(this.clMatchBtn);
             this.Controls.Add(this.btn_clickAll);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.button7);
@@ -182,6 +206,8 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button btn_clickAll;
+        private System.Windows.Forms.Button clMatchBtn;
+        private System.Windows.Forms.Button angleJudge;
     }
 }
 
